@@ -7,9 +7,8 @@ exports.handler = async function (event) {
     let response;
 
     try {
-
         switch (program) {
-            case program === 'azul':
+            case 'azul':
                 response = await scrapAzul(user, pass, url);
                 break;
         
