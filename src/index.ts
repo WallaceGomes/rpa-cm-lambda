@@ -71,7 +71,7 @@ async function scrapAzul(user, pass, url) {
     await page.type('#password', pass, {
         delay: 50,
     });
-    await page.click('#ta-login-btn');
+    await page.click('#btnLogin');
     console.log('click login');
 
     //if the form has some error the rpa will not find the button
