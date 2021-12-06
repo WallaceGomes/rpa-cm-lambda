@@ -38,6 +38,8 @@ async function scrap(user, pass, url) {
 
 	const page = await browser.newPage();
 
+    page.setDefaultNavigationTimeout(30000);
+
     console.log(`Loading page...:${url}`);
     await page.goto(url);
 
@@ -56,10 +58,14 @@ async function scrapAzul(user, pass, url) {
         ignoreHTTPSErrors: true,
     });
 
+    //página de extrato https://tudoazul.voeazul.com.br/group/azul/activity-history
+    //página de login https://apps.voeazul.com.br/TudoAzulRenew/
+
 	const page = await browser.newPage();
+    page.setDefaultNavigationTimeout(30000);
 
     console.log(`Loading page...:${url}`);
-    await page.goto(url);
+    await page.goto(url, { waitUntil: 'networkidle2' });
 
     await page.waitForSelector('#agentName');
     console.log('type login');
@@ -71,15 +77,17 @@ async function scrapAzul(user, pass, url) {
     await page.type('#password', pass, {
         delay: 50,
     });
-    await page.click('#btnLogin');
+    await page.click('#btnEfetuarLogin');
     console.log('click login');
 
     //if the form has some error the rpa will not find the button
-    await page.waitForSelector(
-        'a.btn.btn-block.btn-outline.btn-outline-light',
-        { timeout: 30000 },
-    );
-    await page.click('a.btn.btn-block.btn-outline.btn-outline-light');
+    // await page.waitForSelector(
+    //     'a.btn.btn-block.btn-outline.btn-outline-light',
+    //     { timeout: 30000 },
+    // );
+    // await page.click('a.btn.btn-block.btn-outline.btn-outline-light');
+
+    await page.goto('https://tudoazul.voeazul.com.br/group/azul/activity-history', { waitUntil: 'networkidle2' });
 
     await page.waitForSelector('#balance');
     const balance = await page.evaluate(() => {
