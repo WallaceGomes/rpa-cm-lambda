@@ -1,4 +1,6 @@
 import chromium from 'chrome-aws-lambda';
+import recaptcha from 'puppeteer-extra-plugin-recaptcha';
+import { addExtra } from 'puppeteer-extra';
 
 exports.handler = async function (event) {
     const { queryStringParameters } = event;
@@ -28,7 +30,9 @@ exports.handler = async function (event) {
 }
 
 async function scrap(user, pass, url) {
-	const browser = await chromium.puppeteer.launch({
+	const puppeteerExtra = addExtra(chromium.puppeteer as any);
+
+	const browser = await puppeteerExtra.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath,
@@ -50,7 +54,10 @@ async function scrap(user, pass, url) {
 }
 
 async function scrapAzul(user, pass, url) {
-	const browser = await chromium.puppeteer.launch({
+
+    const puppeteerExtra = addExtra(chromium.puppeteer as any);
+
+	const browser = await puppeteerExtra.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
         executablePath: await chromium.executablePath,
@@ -113,4 +120,39 @@ async function scrapAzul(user, pass, url) {
     await browser.close();
 
     return { miles: balance, expiryDate: expDate };
+}
+
+async function scrapLatam(user, pass, url) {
+    const browser = await chromium.puppeteer.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath,
+        headless: chromium.headless,
+        ignoreHTTPSErrors: true,
+    });
+
+	const page = await browser.newPage();
+    page.setDefaultNavigationTimeout(30000);
+
+    console.log(`Loading page...:${url}`);
+    await page.goto(url, { waitUntil: 'networkidle2' });
+
+    await page.goto('https://www.pontosmultiplus.com.br/login/');
+
+    // console.log('Loading page...');
+    await page.waitForSelector('#userid');
+    // console.log('type login');
+    await page.type('#userid', user, {
+        delay: 50,
+    });
+    await page.waitForSelector('#password');
+    // console.log('type password');
+    await page.type('#password', pass, {
+        delay: 50,
+    });
+    // await page.waitForTimeout(90000);
+    await page.click('button.btn');
+    // console.log('click login');
+
+    await page.waitForTimeout(500);
 }

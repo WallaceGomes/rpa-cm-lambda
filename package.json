@@ -2,16 +2,20 @@
   "name": "puppeteer-lambda-ts",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index",
   "scripts": {
-    "zip": "tsc && 7z a -r function.zip ./dist/*  node_modules/",
-    "sendToLambda": "npm run zip && aws s3 cp function.zip s3://puppeteer-chrome-aws && aws lambda update-function-code --function-name puppeteer-lambda-test --s3-bucket puppeteer-chrome-aws --s3-key function.zip"
+    "build": "rm -rf ./dist && tsc",
+    "zip": "npm run build && 7z a -r function.zip ./dist/*  node_modules/",
+    "sendToLambda": "npm run zip && aws s3 cp function.zip s3://puppeteer-chrome-aws && rm function.zip && aws lambda update-function-code --function-name puppeteer-lambda-test --s3-bucket puppeteer-chrome-aws --s3-key function.zip"
   },
   "author": "Wallace Gomes",
   "license": "ISC",
   "dependencies": {
     "chrome-aws-lambda": "^10.1.0",
-    "puppeteer-core": "^10.4.0"
+    "puppeteer-core": "^10.4.0",
+    "puppeteer-extra": "^3.2.3",
+    "puppeteer-extra-plugin-recaptcha": "^3.5.0",
+    "puppeteer-extra-plugin-stealth": "^2.9.0"
   },
   "devDependencies": {
     "@types/node": "^16.10.1",
